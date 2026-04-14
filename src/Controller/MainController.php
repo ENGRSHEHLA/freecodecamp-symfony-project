@@ -14,7 +14,7 @@ class MainController extends AbstractController
     {
         return $this->render(view: 'home/index.html.twig');
     }
-    #[Route("/custome/{name}", name: "custome")]
+    #[Route("/custome/{name?}", name: "custome")]
     public function custome(Request $request)
     {
         $name = $request->get(key: 'name');
