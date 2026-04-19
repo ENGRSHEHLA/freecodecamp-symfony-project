@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Post will be shown{% endblock %}
+
+{# 
+{% extends 'base.html.twig' %}
+
+{% block title %}Post details{% endblock %}
+
+{% block body %}
+    <h1>Post details</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ post.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ post.title }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Previous Post</h2>
+
+    {% if previousPost %}
+        <p>
+            <a href="{{ path('app_post.show', {'id': previousPost.id}) }}">
+                {{ previousPost.title }}
+            </a>
+        </p>
+    {% else %}
+        <p>No previous post found.</p>
+    {% endif %}
+
+    <a href="{{ path('app_post.app_post') }}">back to list</a>
+{% endblock %}
+ #}
+  {% block body %}
+ 
+<button type="button" onclick="history.back()">Go back</button>
+
+
+{% endblock %}

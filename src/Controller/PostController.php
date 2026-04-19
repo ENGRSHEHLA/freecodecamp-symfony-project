@@ -3,28 +3,89 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Form\PostType;
+use App\Repository\PostRepository;
+use Doctrine\DBAL\Schema\View;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+
 #[Route('/post', name: 'app_post.')]
 
 final class PostController extends AbstractController
 {
-    #[Route('/', name: 'app_post')]
-    public function index(): Response
+    #[Route('/', name: 'index')]
+    public function index(PostRepository $postRepository): Response
     {
+        $posts = $postRepository->findAll();
+
+
         return $this->render('post/index.html.twig', [
-            'controller_name' => 'PostController',
+            // 'controller_name' => 'PostController',
+
+            'posts' => $posts
         ]);
     }
-    #[Route('/post/create', name: 'app_post_create')]
-    public function create(Request $request, EntityManagerInterface $em)
+    #[Route('/create', name: 'app_post_create')]
+    public function create(Request $request, EntityManagerInterface $em): Response
     {
         $post = new Post();
-        $post->setTitle('my first post title');
-        $em->persist($post);
+        $form = $this->createForm(PostType::class, $post);
+
+        $form->handleRequest($request);
+        // $form->getErrors();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($post);
+            $em->flush();
+
+            return $this->redirectToRoute('app_post.index');
+        }
+
+        return $this->render('post/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    #[Route('/show/{id}', name: 'show')]
+    public function show(Post $post): Response
+
+    // public function show($id, PostRepository $postRepository): Response
+    {
+        // $post = $postRepository->find($id);
+        return $this->render('post/show.html.twig', [
+            'post' => $post
+        ]);
+    }
+
+    // #[Route('/show/{id}', name: 'show')]
+    // public function show($id, PostRepository $postRepository): Response
+    // {
+    //     $post = $postRepository->find($id);
+
+    //     if (!$post) {
+    //         throw $this->createNotFoundException('Post not found');
+    //     }
+
+    //     $previousPost = $postRepository->findOneBy(
+    //         ['id' => $id - 1]
+    //     );
+
+    //     return $this->render('post/show.html.twig', [
+    //         'post' => $post,
+    //         'previousPost' => $previousPost,
+    //     ]);
+    #[Route('/delete/{id}', name: 'delete', methods: ['POST'])]
+    public function delete(?Post $post, EntityManagerInterface $em): Response
+    {
+        if (!$post) {
+            throw $this->createNotFoundException('Post not found');
+        }
+
+        $em->remove($post);
+        $em->flush();
+        $this->addFlash('success', 'Post deleted successfully');
+        return $this->redirectToRoute('app_post.index');
     }
 }
