@@ -29,7 +29,7 @@ final class RegisterationController extends AbstractController
                 'type' => PasswordType::class,
                 'required' => true,
                 'invalid_message' => 'The password fields must match.',
-                'first_options'  => ['label' => 'Password'],
+                'first_options' => ['label' => 'Password'],
                 'second_options' => ['label' => 'Confirm Password'],
             ])
             ->add('register', SubmitType::class, [
@@ -41,7 +41,9 @@ final class RegisterationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('password')->getData();
+            /** @var User $user */
+            $user = $form->getData();
+            $plainPassword = $user->getPassword();
 
             $user->setPassword(
                 $passwordHasher->hashPassword($user, $plainPassword)
@@ -50,7 +52,7 @@ final class RegisterationController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            return new Response('Registration successful');
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('registeration/index.html.twig', [
