@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
-use Doctrine\DBAL\Schema\View;
+use App\Services\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,31 +29,73 @@ final class PostController extends AbstractController
             'posts' => $posts
         ]);
     }
+
     #[Route('/create', name: 'app_post_create')]
-    public function create(Request $request, EntityManagerInterface $em): Response
+    public function create(Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
     {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
 
         $form->handleRequest($request);
-        // $form->getErrors();
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('image')->getData();
+
+            if ($file) {
+                $filename = $fileUploader->uploadFile($file);
+                $post->setImage($filename);
+            }
+
             $em->persist($post);
             $em->flush();
+
+            $this->addFlash('success', 'Post created successfully');
 
             return $this->redirectToRoute('app_post.index');
         }
 
         return $this->render('post/create.html.twig', [
             'form' => $form->createView(),
+            'page_title' => 'Create New Post',
+            'page_subtitle' => 'Add title, category, and optional image for your post.',
+            'submit_label' => 'Create Post',
         ]);
     }
-    #[Route('/show/{id}', name: 'show')]
-    public function show(Post $post): Response
 
-    // public function show($id, PostRepository $postRepository): Response
+    #[Route('/edit/{id}', name: 'edit')]
+    public function edit(Post $post, Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
     {
-        // $post = $postRepository->find($id);
+        $form = $this->createForm(PostType::class, $post);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('image')->getData();
+
+            if ($file) {
+                $filename = $fileUploader->uploadFile($file);
+                $post->setImage($filename);
+            }
+
+            $em->flush();
+            $this->addFlash('success', 'Post updated successfully');
+
+            return $this->redirectToRoute('app_post.index');
+        }
+
+        return $this->render('post/create.html.twig', [
+            'form' => $form->createView(),
+            'page_title' => 'Update Post',
+            'page_subtitle' => 'Edit post details and optionally replace image.',
+            'submit_label' => 'Update Post',
+        ]);
+    }
+
+    #[Route('/show/{id}', name: 'show')]
+    public function show($id, PostRepository $postRepository): Response
+    {
+        $post = $postRepository->findPostWithCategory($id);
+
         return $this->render('post/show.html.twig', [
             'post' => $post
         ]);

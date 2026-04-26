@@ -2,6 +2,43 @@
 
 {% block title %}Post will be shown{% endblock %}
 
+{% block body %}
+
+<h1>{{ post.title }}</h1>
+
+{% if post.category %}
+    <em>{{ post.category.name }}</em>
+{% endif %}
+
+<hr>
+
+{% if post.image %}
+    <img src="{{ asset('uploads/images/' ~ post.image) }}" alt="{{ post.title }}" class="img-thumbnail" style="max-width: 850px;">
+{% endif %}
+
+<br><br>
+
+<button type="button" onclick="history.back()">Go back</button> 
+
+{% endblock %}
+
+
+
+
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Post will be shown{% endblock %}
+
+{% block body %}
+<h1>{{ post.title }}</h1>
+{# <em> {{ post.category }}</em>  #}
+{# <em> {{ post.category.id }}</em> #}
+{# {% if post.category %}
+    <em>{{ post.category.name }}</em>
+    <hr>
+<img src="{{ asset('uploads/images/' ~ post.image) }}" alt="{{ post.title }}" class="img-thumbnail" style="max-width: 300px;">
+<br><br>
+<button type="button" onclick="history.back()">Go back</button> #} 
 {# 
 {% extends 'base.html.twig' %}
 
@@ -38,9 +75,5 @@
     <a href="{{ path('app_post.app_post') }}">back to list</a>
 {% endblock %}
  #}
-  {% block body %}
- 
-<button type="button" onclick="history.back()">Go back</button>
-
-
-{% endblock %}
+{#   
+{% endblock %} #}
