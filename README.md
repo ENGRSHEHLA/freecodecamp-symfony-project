@@ -51,7 +51,7 @@ Database defaults from compose.yaml:
 - Port: 5433
 - DB: app
 - User: app
-- Password: admin231
+- Password: set in your local environment only
 
 ### 3. Configure environment
 
@@ -60,8 +60,10 @@ Make sure your DATABASE_URL points to PostgreSQL on port 5433.
 Example:
 
 ```env
-DATABASE_URL="postgresql://app:admin231@127.0.0.1:5433/app?serverVersion=16&charset=utf8"
+DATABASE_URL="postgresql://DB_USER:DB_PASSWORD@127.0.0.1:5433/app?serverVersion=16&charset=utf8"
 ```
+
+Do not commit real credentials to version control. Keep them in local-only files such as `.env.local`.
 
 ### 4. Run migrations
 
