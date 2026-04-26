@@ -47,20 +47,21 @@ docker compose up -d database
 
 Database defaults from compose.yaml:
 
-- Host: 127.0.0.1
-- Port: 5433
-- DB: app
-- User: app
+- Host: set in your local environment only
+- Port: set in your local environment only
+- DB Name: your_database_name
+- User: your_database_user
 - Password: set in your local environment only
 
 ### 3. Configure environment
 
-Make sure your DATABASE_URL points to PostgreSQL on port 5433.
+Make sure your DATABASE_URL points to your local PostgreSQL connection settings.
 
 Example:
 
 ```env
-DATABASE_URL="postgresql://DB_USER:DB_PASSWORD@127.0.0.1:5433/app?serverVersion=16&charset=utf8"
+DATABASE_URL="postgresql://DB_USER:DB_PASSWORD@DB_HOST:DB_PORT/DB_NAME?serverVersion=16&charset=utf8"
+DB_NAME="your_database_name"
 ```
 
 Do not commit real credentials to version control. Keep them in local-only files such as `.env.local`.
